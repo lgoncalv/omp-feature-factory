@@ -1,0 +1,1 @@
+/home/luciano/.nvm/versions/node/v24.13.0/lib/node_modules/@earendil-works/pi-coding-agent/examples/extensions/subagent/prompts/scout-and-plan.md
