@@ -12,7 +12,7 @@ pi                          # trust the project on first run
 Then type:
 
 ```
-/feature-build Add user authentication with JWT, login/logout endpoints, and session management
+* /build-feature Add user authentication with JWT, login/logout endpoints, and session management
 ```
 
 The agent reviews the prompt, submits it, and the pipeline runs end-to-end.
@@ -69,7 +69,7 @@ Issues declare dependencies at creation time via `dependsOn: [#42]`. This adds a
 omp-feature-factory/
 ├── .pi/
 │   ├── extensions/
-│   │   ├── feature-pipeline/      ← GitHub + worktree tools, /feature-build command
+│   │   ├── feature-pipeline/      ← GitHub + worktree tools, /build-feature command
 │   │   │   ├── index.ts
 │   │   │   ├── github-tools.ts
 │   │   │   └── worktree-tools.ts
@@ -105,4 +105,4 @@ omp-feature-factory/
 
 | Command | Description |
 |---------|-------------|
-| `/feature-build <requirements>` | Start the full pipeline — drops a prompt in the editor to review and submit |
+| `/build-feature <requirements>` | Start the full pipeline — drops a prompt in the editor to review and submit |

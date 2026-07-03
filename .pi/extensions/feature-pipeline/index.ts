@@ -1,7 +1,7 @@
 /**
  * Feature Pipeline Extension
  *
- * Provides GitHub + git worktree tools and a /feature-build command
+ * Provides GitHub + git worktree tools and a /build-feature command
  * that orchestrates a multi-agent pipeline:
  *   PRD Writer → Code Scout → Work Splitter → Workers (parallel) → Testers
  *
@@ -410,14 +410,14 @@ export default function (pi: ExtensionAPI) {
     },
   });
 
-  // ── Command: /feature-build ──────────────────────────────────
+  // ── Command: /build-feature ──────────────────────────────────
 
-  pi.registerCommand("feature-build", {
+  pi.registerCommand("build-feature", {
     description: "Start the full feature pipeline: PRD → scout → split → workers → tests",
     handler: async (args, ctx) => {
       const requirements = args.trim();
       if (!requirements) {
-        ctx.ui.notify("Usage: /feature-build <feature requirements>", "error");
+        ctx.ui.notify("Usage: /build-feature <feature requirements>", "error");
         return;
       }
 
