@@ -1,7 +1,7 @@
 /**
  * Git worktree tools for parallel isolated workspaces.
  *
- * Each worker gets its own worktree at /tmp/pi-worktrees/issue-<N>/
+ * Each worker gets its own worktree at /tmp/omp-worktrees/issue-<N>/
  * so multiple workers can operate in parallel on different branches.
  */
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
@@ -9,7 +9,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import * as os from "node:os";
 
-export const WORKTREE_ROOT = path.join(os.tmpdir(), "pi-worktrees");
+export const WORKTREE_ROOT = path.join(os.tmpdir(), "omp-worktrees");
 
 /**
  * Create a git worktree for an issue.
@@ -17,7 +17,7 @@ export const WORKTREE_ROOT = path.join(os.tmpdir(), "pi-worktrees");
  *
  * Strategy:
  *  1. Derive branch name from issue number: feature/issue-<N>
- *  2. Create worktree at /tmp/pi-worktrees/issue-<N>/
+ *  2. Create worktree at /tmp/omp-worktrees/issue-<N>/
  *  3. Create and checkout a new branch in the worktree
  */
 export async function createWorktree(

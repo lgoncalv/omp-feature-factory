@@ -1,11 +1,11 @@
-# pi-feature-factory
+# omp-feature-factory
 
 Multi-agent feature pipeline powered by [pi](https://github.com/badlogic/pi). Paste a feature requirement and the pipeline orchestrates specialized agents from PRD to pull request — creating GitHub milestones, granular issues, and parallel worktrees for concurrent implementation.
 
 ## Quick Start
 
 ```bash
-cd pi-feature-factory
+cd omp-feature-factory
 pi                          # trust the project on first run
 ```
 
@@ -48,7 +48,7 @@ The splitter also outputs a parallelization plan: which issues can run concurren
 
 This phase runs in **batches**. The agent checks `feature_status` to find unblocked issues, then for each one:
 
-1. **Isolate** — `git_worktree_create` spins up a workspace at `/tmp/pi-worktrees/issue-N/` on branch `feature/issue-N`
+1. **Isolate** — `git_worktree_create` spins up a workspace at `/tmp/omp-worktrees/issue-N/` on branch `feature/issue-N`
 2. **Implement** — the `worker` agent modifies code in the worktree
 3. **Commit** — `git_commit_and_push` stages, commits, and pushes the branch
 4. **Test** — the `tester` agent writes unit and integration tests, runs them, commits again
@@ -66,7 +66,7 @@ Issues declare dependencies at creation time via `dependsOn: [#42]`. This adds a
 ## Project Structure
 
 ```
-pi-feature-factory/
+omp-feature-factory/
 ├── .pi/
 │   ├── extensions/
 │   │   ├── feature-pipeline/      ← GitHub + worktree tools, /feature-build command
@@ -96,7 +96,7 @@ pi-feature-factory/
 | `github_issue_create` | Create an issue under a milestone with optional `dependsOn` |
 | `github_issue_list` | List/filter issues by milestone, state, labels |
 | `github_pr_create` | Create a PR, optionally linking to issue with `Closes #N` |
-| `git_worktree_create` | Isolated workspace at `/tmp/pi-worktrees/issue-N/` on `feature/issue-N` |
+| `git_worktree_create` | Isolated workspace at `/tmp/omp-worktrees/issue-N/` on `feature/issue-N` |
 | `git_worktree_remove` | Clean up worktree after merge |
 | `git_commit_and_push` | Stage, commit, push all changes in a worktree |
 | `feature_status` | Pipeline overview: ready / blocked / completed per milestone |

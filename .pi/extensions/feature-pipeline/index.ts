@@ -271,9 +271,9 @@ export default function (pi: ExtensionAPI) {
     label: "Create Worktree",
     description:
       "Create an isolated git worktree for parallel work on an issue. Derives branch name 'feature/issue-N' from the issue number. Use before starting work on an issue so multiple issues can be worked on in parallel.",
-    promptSnippet: "Create isolated git worktree at /tmp/pi-worktrees/issue-N",
+    promptSnippet: "Create isolated git worktree at /tmp/omp-worktrees/issue-N",
     promptGuidelines: [
-      "Use git_worktree_create before working on each issue. This creates an isolated workspace so multiple workers can operate in parallel. Pass the issue number — the tool creates branch 'feature/issue-N' and worktree at /tmp/pi-worktrees/issue-N/.",
+      "Use git_worktree_create before working on each issue. This creates an isolated workspace so multiple workers can operate in parallel. Pass the issue number — the tool creates branch 'feature/issue-N' and worktree at /tmp/omp-worktrees/issue-N/.",
     ],
     parameters: WorktreeCreateParams,
     async execute(_id, params, _signal, _onUpdate, ctx) {
