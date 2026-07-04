@@ -1,0 +1,8 @@
+{
+  "name": "omp-feature-factory",
+  "version": "1.0.0",
+  "description": "Multi-agent feature pipeline for Oh My Pi — PRD → scout → issue splitting → parallel implementation → PR",
+  "omp": {
+    "extensions": ["./extension/index.ts"]
+  }
+}

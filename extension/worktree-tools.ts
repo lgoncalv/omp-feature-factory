@@ -4,7 +4,7 @@
  * Each worker gets its own worktree at /tmp/omp-worktrees/issue-<N>/
  * so multiple workers can operate in parallel on different branches.
  */
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI } from "@oh-my-pi/pi-coding-agent";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as os from "node:os";

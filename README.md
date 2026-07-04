@@ -1,52 +1,84 @@
 # omp-feature-factory
 
-Multi-agent feature pipeline powered by [pi](https://github.com/badlogic/pi). Paste a feature requirement and the pipeline orchestrates specialized agents from PRD to pull request — creating GitHub milestones, granular issues, and parallel worktrees for concurrent implementation.
+Multi-agent feature pipeline for [Oh My Pi](https://github.com/badlogic/pi). Feed it a feature requirement and it orchestrates specialized agents end-to-end — PRD → code reconnaissance → issue splitting → parallel implementation → pull requests, with GitHub milestones, granular issues, and isolated worktrees.
 
-## Quick Start
+## Prerequisites
+
+- **Oh My Pi** (`omp`) — [install guide](https://github.com/badlogic/pi)
+- **GitHub CLI** (`gh`) — authenticated (`gh auth status`)
+- **git** — with a GitHub remote (`origin` pointing to `github.com`)
+
+## Installation
+
+Install the pipeline globally so it's available in any repository:
 
 ```bash
+git clone https://github.com/<your-org>/omp-feature-factory.git
 cd omp-feature-factory
-pi                          # trust the project on first run
+
+# Register the extension (tools + /build-feature command)
+omp install .
+
+# Symlink agents so OMP discovers them
+mkdir -p ~/.omp/agent/agents
+ln -s "$PWD"/agents/*.md ~/.omp/agent/agents/
+
+# Symlink workflow commands
+mkdir -p ~/.omp/agent/commands
+ln -s "$PWD"/commands/*.md ~/.omp/agent/commands/
 ```
 
-Then type:
+
+```bash
+omp -p "list available task agents"
+# Should show: prd-writer, scout, work-splitter, worker, tester, planner, reviewer
+```
+
+## Usage
+
+Navigate to any GitHub repository and run:
 
 ```
 * /build-feature Add user authentication with JWT, login/logout endpoints, and session management
 ```
 
-The agent reviews the prompt, submits it, and the pipeline runs end-to-end.
+The agent presents a pipeline prompt for review. Submit it and the pipeline runs:
+
+1. **PRD & Milestone** — writes a structured PRD, creates a GitHub milestone
+2. **Code Scout** — explores the codebase, returns structured findings
+3. **Work Splitter** — creates granular, independently-deployable GitHub issues
+4. **Parallel Workers** — each issue gets its own git worktree, implementation, tests, and PR
 
 ## Pipeline Phases
 
 ### Phase 1 — PRD & Milestone (`prd-writer`)
 
-The `prd-writer` agent analyzes the requirements, explores existing code patterns, and produces a structured PRD covering problem statement, scope, technical requirements, user stories, acceptance criteria, and success metrics. The PRD is saved as a **GitHub milestone** description.
+Analyzes requirements, explores existing code, produces a structured PRD covering problem statement, scope, technical requirements, user stories, acceptance criteria, and success metrics. The PRD becomes a **GitHub milestone** description.
 
 **Tools:** `read`, `bash`, `github_milestone_create`
 
 ### Phase 2 — Code Scout (`scout`)
 
-The `scout` agent does fast reconnaissance of the codebase and returns compressed, structured findings: exact file paths with line ranges, key types and interfaces, architecture notes, and a recommended starting point. This context flows into the work splitter so issues are grounded in the real code.
+Fast reconnaissance of the codebase. Returns compressed, structured findings: exact file paths with line ranges, key types and interfaces, architecture notes, and a recommended starting point.
 
 **Tools:** `read`, `grep`, `find`, `ls`, `bash`
 
 ### Phase 3 — Work Split (`work-splitter`)
 
-The `work-splitter` agent receives the PRD and scout findings, then creates **granular GitHub issues** under the milestone. Each issue is:
+Creates **granular GitHub issues** under the milestone. Each issue is:
 
 - **Independently deployable** — can ship on its own
 - **Small** — completable in one focused session
 - **Explicit** — clear acceptance criteria and technical notes
 - **Dependency-aware** — blocked issues get `depends-on:#N` labels
 
-The splitter also outputs a parallelization plan: which issues can run concurrently and which must wait.
+Also outputs a parallelization plan: which issues can run concurrently and which must wait.
 
 **Tools:** `read`, `bash`, `github_issue_create`, `github_issue_list`
 
 ### Phase 4 — Parallel Workers & Testers (`worker` + `tester`)
 
-This phase runs in **batches**. The agent checks `feature_status` to find unblocked issues, then for each one:
+Runs in **batches**. The pipeline checks `feature_status` to find unblocked issues, then for each one:
 
 1. **Isolate** — `git_worktree_create` spins up a workspace at `/tmp/omp-worktrees/issue-N/` on branch `feature/issue-N`
 2. **Implement** — the `worker` agent modifies code in the worktree
@@ -56,37 +88,12 @@ This phase runs in **batches**. The agent checks `feature_status` to find unbloc
 
 Multiple unblocked issues run **in parallel** via the subagent tool's `tasks` array. As PRs merge, previously blocked issues become unblocked and the next batch starts.
 
-**Worker tools:** all default  
+**Worker tools:** all default
 **Tester tools:** `read`, `write`, `edit`, `bash`, `github_pr_create`, `git_commit_and_push`
 
 ## Dependency Tracking
 
 Issues declare dependencies at creation time via `dependsOn: [#42]`. This adds a `depends-on:#42` GitHub label. The `feature_status` tool checks whether all dependency issues are closed — blocked issues show as 🚫 and agents skip them until their dependencies merge.
-
-## Project Structure
-
-```
-omp-feature-factory/
-├── .pi/
-│   ├── extensions/
-│   │   ├── feature-pipeline/      ← GitHub + worktree tools, /build-feature command
-│   │   │   ├── index.ts
-│   │   │   ├── github-tools.ts
-│   │   │   └── worktree-tools.ts
-│   │   └── subagent/              ← agent spawning (symlinked from pi)
-│   ├── agents/                    ← agent role definitions
-│   │   ├── prd-writer.md
-│   │   ├── scout.md
-│   │   ├── work-splitter.md
-│   │   ├── worker.md
-│   │   └── tester.md
-│   └── prompts/                   ← workflow presets
-│       ├── implement.md
-│       ├── scout-and-plan.md
-│       └── implement-and-review.md
-├── .gitignore
-└── README.md
-```
 
 ## Tools Reference
 
@@ -106,3 +113,39 @@ omp-feature-factory/
 | Command | Description |
 |---------|-------------|
 | `/build-feature <requirements>` | Start the full pipeline — drops a prompt in the editor to review and submit |
+
+## Project Structure
+
+```
+omp-feature-factory/
+├── package.json              ← OMP plugin manifest
+├── extension/                ← Extension source (tools + /build-feature command)
+│   ├── index.ts              ← Entry: registers tools and command
+│   ├── github-tools.ts       ← GitHub API helpers (milestones, issues, PRs)
+│   └── worktree-tools.ts     ← Git worktree management
+├── agents/                   ← Agent definitions
+│   ├── prd-writer.md
+│   ├── scout.md
+│   ├── work-splitter.md
+│   ├── worker.md
+│   ├── tester.md
+│   ├── planner.md
+│   └── reviewer.md
+├── commands/                 ← Workflow slash commands
+│   ├── implement.md
+│   ├── scout-and-plan.md
+│   └── implement-and-review.md
+├── .gitignore
+└── README.md
+```
+
+## How it works
+
+- **`omp install .`** links the package into `~/.omp/plugins/node_modules/omp-feature-factory`. OMP reads `package.json#omp.extensions` and loads `extension/index.ts`, which registers the 8 pipeline tools and the `/build-feature` command.
+- **Agent symlinks** (`~/.omp/agent/agents/*.md`) make the agent definitions available to OMP's task agent system.
+- **Command symlinks** (`~/.omp/agent/commands/*.md`) make workflow presets available as `/implement`, `/scout-and-plan`, etc.
+- All paths are symlinks — edit any file in the repo and the change is live on the next `omp` session.
+
+## Customization
+
+Edit any file in the repo — agents, tools, commands. Changes apply immediately (next OMP session). The repo is the single source of truth.
