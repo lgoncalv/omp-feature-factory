@@ -6,9 +6,9 @@
  *   PRD Writer → Code Scout → Work Splitter → Workers (parallel) → Testers
  *
  * Designed to work alongside the built-in subagent extension.
- * Agent definitions live in ~/.pi/agent/agents/
+ * Agent definitions live in .omp/agents/
  */
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI } from "@oh-my-pi/pi-coding-agent";
 import { Type } from "typebox";
 import * as path from "node:path";
 import * as fs from "node:fs";
