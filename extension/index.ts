@@ -472,7 +472,7 @@ export default function (pi: ExtensionAPI) {
         `- Before picking an issue, verify it's not blocked by checking \`feature_status\``,
         `- Each worker MUST use \`git_worktree_create\` to isolate its work`,
         `- Push commits before creating PRs`,
-        `- When all issues are done, clean up worktrees with \`git_worktree_remove\``,
+        `- Clean up worktrees ONLY after the associated PR is merged. Run \`git_worktree_remove\` per worktree path. Never delete a remote branch while its PR is still open — it closes the PR.`,
         `- Report progress after each phase`,
       ].join("\n");
 
