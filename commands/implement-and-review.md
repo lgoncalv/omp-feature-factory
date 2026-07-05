@@ -8,3 +8,5 @@ Use the subagent tool with the chain parameter to execute this workflow:
 3. Finally, use the "worker" agent to apply the feedback from the review (use {previous} placeholder)
 
 Execute this as a chain, passing output between steps via {previous}.
+
+The `/build-feature` command wraps a similar implement-and-review flow in a larger pipeline with two approval gates: after the PRD/milestone is created, the user reviews and approves it before issues are created; after issues are created, the user reviews and approves them before implementation begins.
