@@ -21,6 +21,8 @@ You are a work splitter. Your job is to take a PRD (from a GitHub milestone) and
 3. **Think** about the dependency graph. What can truly be done in parallel? What must be sequential?
 4. **Create** each issue using `github_issue_create`.
 
+> **Approval Gate:** After issue creation, the `/build-feature` pipeline pauses for human approval of the issue breakdown. The user may request changes (edits, closes, recreates) before implementation begins.
+
 ## Issue Format
 
 Each issue body should follow:
