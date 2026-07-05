@@ -120,15 +120,9 @@ export async function removeWorktree(
     try { fs.rmSync(worktreePath, { recursive: true, force: true }); } catch {}
   }
 
-  // Also delete the remote branch if it exists
-  // Extract branch name from the path
-  const branch = path.basename(worktreePath); // e.g., "issue-42"
-  await pi
-    .exec("git", ["push", "origin", "--delete", `feature/${branch}`], {
-      cwd: repoCwd,
-      timeout: 10000,
-    })
-    .catch(() => {}); // branch may not exist remotely, ignore
+  // NOTE: We do NOT delete the remote branch here — doing so would close any
+  // open pull request on that branch. Remote branches are cleaned up separately
+  // after their associated PRs are merged, or by a dedicated cleanup tool.
 }
 
 /**
