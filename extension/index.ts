@@ -440,6 +440,9 @@ export default function (pi: ExtensionAPI) {
         ``,
         `Execute the following multi-phase pipeline. Use the available tools at each phase.`,
         ``,
+        `## Size triage (read this FIRST)`,
+        `If the requirement is a SMALL change — one file, or a pure constant/ratio/label/string tweak — skip the ceremony: create ONE issue (no milestone), run worker + tester on it, open the PR, and stop. Do NOT run Phases 1-3, do NOT create a milestone, do NOT pause for the approval gates. Small changes never need a PRD or a scout.`,
+        ``,
         `## Phase 1: PRD & Milestone`,
         `1. Analyze the requirements: **${requirements}**`,
         `2. Write a structured PRD with: Problem Statement, Scope, Technical Requirements, Acceptance Criteria, Success Metrics`,
@@ -496,6 +499,14 @@ export default function (pi: ExtensionAPI) {
         `- Push commits before creating PRs`,
         `- Clean up worktrees ONLY after the associated PR is merged. Run \`git_worktree_remove\` per worktree path. Never delete a remote branch while its PR is still open — it closes the PR.`,
         `- Report progress after each phase`,
+        ``,
+        `## Token Efficiency (mandatory)`,
+        `- Handoffs: pass artifact or local:// paths between agents (scout report, issue bodies). NEVER paste the same spec twice; never re-encode a report you already hold.`,
+        `- Workers: tell each worker to read its issue (issue://N) as the spec; pass only the worktree path plus constraints NOT already in the issue.`,
+        `- Scout: its agent definition enforces the compressed format (symbols + line numbers, MUST-CHANGE only); do not ask it for code bodies or SAFE lists.`,
+        `- Tester: default to LIGHT mode (suite + one focused test per uncovered contract). DEEP mode (mutation/negative checks) ONLY for logic-heavy changes (arithmetic, engines, parsers, state machines).`,
+        `- Verification: run the test suite once per phase, not after every agent. Spot-check diffs instead of full re-reviews; trust agent reports unless evidence contradicts them.`,
+        `- Issue bodies are read by every worker and tester: keep them tight (problem + acceptance criteria + minimal technical notes). Verbose bodies multiply across N workers.`,
       ].join("\n");
 
       // Set the prompt in the editor so the user can review and submit
